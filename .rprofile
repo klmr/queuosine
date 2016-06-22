@@ -1,0 +1,4 @@
+source('~/.Rprofile')
+.libPaths(c('~/tmp/pkgs', .libPaths()))
+
+# vim: ft=r
