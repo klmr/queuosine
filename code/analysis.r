@@ -25,8 +25,8 @@ coding_sequences = cds %>%
            Sequence = `Coding sequence`) %>%
     filter(cds_$valid_cds(Sequence)) %>%
     group_by(Gene) %>%
-    top_n(nchar(Sequence)) %>%
-    slice(1)
+    top_n(1, nchar(Sequence)) %>%
+    slice(1) %>% # Break ties
     ungroup()
 
 codon_usage = cds_$cu$cu(coding_sequences)
