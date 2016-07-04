@@ -42,3 +42,52 @@ filtered_codon_usage = relative_codon_usage %>%
     arrange(desc(Score))
 
 io$write_table(select(filtered_codon_usage, Gene, Score), 'data/genelist.csv', col.names = FALSE)
+
+piano = modules::import_package('piano')
+
+load_gene_set = function () {
+    path = 'data/gene_association.wb.gz'
+
+    read = function () {
+        on.exit(close(f))
+        f = gzfile(path, 'r')
+        suppressWarnings(io$read_table(f, sep = '\t', comment.char = '!')) %>%
+            select(Gene = 3, GO = 5) %>%
+            piano$loadGSC(type = 'data.frame')
+    }
+
+    go = try(read(), silent = TRUE)
+
+    if (! inherits(go, 'try-error'))
+        return(go)
+
+    download.file('http://geneontology.org/gene-associations/gene_association.wb.gz',
+                  path)
+    read()
+}
+
+go_genes = load_gene_set()
+
+untidy = function (tidy_data, rownames = 1)
+    `rownames<-`(as.data.frame(tidy_data[-rownames]), tidy_data[[rownames]])
+
+gsa = function (.data, go_genes, genes = Gene, stat = Stat)
+    gsa_(.data, go_genes, substitute(genes), substitute(stat))
+
+gsa_ = function (.data, go_genes, genes = 'Gene', stat = 'Stat') {
+    stopifnot(inherits(go_genes, 'GSC'))
+    data = .data %>%
+        # In case `stat` contains a calculation.
+        mutate_(` stat ` = stat) %>%
+        select_(genes, '` stat `') %>%
+        untidy()
+    piano$runGSA(data, gsc = go_genes, verbose = FALSE)
+}
+
+gsa_result = gsa(filtered_codon_usage, go_genes, Gene, 1 - Score)
+go_table = piano$GSAsummaryTable(gsa_result) %>%
+    select(Name, padj = `p adj (non-dir.)`) %>%
+    filter(padj < 0.05) %>%
+    arrange(padj)
+
+io$write_table(go_table, 'data/enriched-go-terms.txt')
