@@ -1,6 +1,6 @@
 modules::import_package('dplyr', attach = TRUE)
 io = modules::import('ebi-predocs/ebits/io')
-cds_ = modules::import('./code/cds')
+cds_ = modules::import('./cds')
 
 load_cds = function () {
     path = 'data/cds.rds'
