@@ -1,4 +1,10 @@
 source('~/.Rprofile')
+
+if (interactive()) {
+    # Ensure that ‹modules› finds code
+    modules::set_script_path('code/.')
+}
+
 .libPaths(c('~/tmp/pkgs', .libPaths()))
 
 # vim: ft=r
