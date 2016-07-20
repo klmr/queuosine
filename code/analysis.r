@@ -111,10 +111,22 @@ gsa_ = function (.data, go_genes, genes = 'Gene', stat = 'Stat') {
     piano$runGSA(data, gsc = go_genes, verbose = FALSE)
 }
 
+go_label = function (terms) {
+    get_label = function (term) {
+        json = modules::import_package('jsonlite')
+        uri = 'http://www.ebi.ac.uk/ols/api/ontologies/go/terms?short_form=%s'
+        result = json$fromJSON(sprintf(uri, sub(':', '_', term)))
+        result$`_embedded`$terms$label[[1]]
+    }
+
+    vapply(terms, get_label, character(1))
+}
+
 gsa_result = gsa(filtered_codon_usage, go_genes, Gene, 1 - Score)
 go_table = piano$GSAsummaryTable(gsa_result) %>%
     select(Name, padj = `p adj (non-dir.)`) %>%
     filter(padj < 0.05) %>%
+    mutate(Label = go_label(Name)) %>%
     arrange(padj)
 
 io$write_table(go_table, 'data/enriched-go-terms.txt')
