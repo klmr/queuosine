@@ -123,10 +123,12 @@ go_label = function (terms) {
 }
 
 gsa_result = gsa(filtered_codon_usage, go_genes, Gene, 1 - Score)
-go_table = piano$GSAsummaryTable(gsa_result) %>%
+enriched_go_terms = piano$GSAsummaryTable(gsa_result) %>%
     select(Name, padj = `p adj (non-dir.)`) %>%
     filter(padj < 0.05) %>%
     mutate(Label = go_label(Name)) %>%
     arrange(padj)
 
-io$write_table(go_table, 'data/enriched-go-terms.txt')
+#+ enriched-go-terms
+enriched_go_terms
+io$write_table(enriched_go_terms, 'data/enriched-go-terms.txt')
