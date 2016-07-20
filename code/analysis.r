@@ -34,7 +34,10 @@ coding_sequences = cds %>%
     ungroup()
 
 codon_usage = cds_$cu$cu(coding_sequences)
-relative_codon_usage = cds_$cu$norm(codon_usage)
+relative_codon_usage = codon_usage %>%
+    group_by(Gene) %>%
+    mutate(CU = CU / sum(CU)) %>%
+    ungroup()
 
 codon_pattern = '^.A[CU]$'
 filtered_codon_usage = relative_codon_usage %>%
