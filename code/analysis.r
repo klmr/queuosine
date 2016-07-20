@@ -48,6 +48,24 @@ filtered_codon_usage = relative_codon_usage %>%
            Score = SSE / max(SSE)) %>%
     arrange(desc(Score))
 
+#+ codon-usage
+modules::import_package('ggplot2', attach = TRUE)
+theme_set(theme_bw() + theme(panel.border = element_blank(),
+                             panel.grid.major = element_blank(),
+                             panel.grid.minor = element_blank(),
+                             axis.line = element_line(colour = "black")))
+ggrepel = modules::import_package('ggrepel')
+
+ggplot(filtered_codon_usage) +
+    aes(x = '', SumUsage) +
+    geom_boxplot() +
+    labs(x = '', y = 'Usage of codons •A[CU]') +
+    ggrepel$geom_text_repel(aes(label = Gene),
+                            data = head(filtered_codon_usage, 14),
+                            nudge_x = 0.1) +
+        theme(axis.ticks.x = element_blank())
+
+#+ genelist
 io$write_table(select(filtered_codon_usage, Gene, Score), 'data/genelist.csv', col.names = FALSE)
 
 piano = modules::import_package('piano')
