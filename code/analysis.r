@@ -66,6 +66,8 @@ ggplot(filtered_codon_usage) +
         theme(axis.ticks.x = element_blank())
 
 #+ genelist
+head(filtered_codon_usage, 14)
+
 io$write_table(select(filtered_codon_usage, Gene, Score), 'data/genelist.csv', col.names = FALSE)
 
 piano = modules::import_package('piano')
