@@ -1,3 +1,7 @@
+#+ echo=FALSE
+knitr::opts_chunk$set(dev = c('png', 'pdf'))
+
+#+ echo=TRUE
 modules::import_package('dplyr', attach = TRUE)
 io = modules::import('ebi-predocs/ebits/io')
 cds_ = modules::import('./cds')
