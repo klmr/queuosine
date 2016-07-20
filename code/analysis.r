@@ -125,7 +125,7 @@ go_label = function (terms) {
 gsa_result = gsa(filtered_codon_usage, go_genes, Gene, 1 - Score)
 enriched_go_terms = piano$GSAsummaryTable(gsa_result) %>%
     select(Name, padj = `p adj (non-dir.)`) %>%
-    filter(padj < 0.05) %>%
+    filter(padj < 0.99) %>%
     mutate(Label = go_label(Name)) %>%
     arrange(padj)
 
